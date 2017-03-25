@@ -555,7 +555,7 @@ public class SmarterLeaderLatch implements Closeable
 						long duration = 0L;
 						try {
 							while (duration <= client.getZookeeperClient().getConnectionTimeoutMs()) {
-								log.info("Connection to Zookeeper is SUSPENDED. Wait it to be back. Already waited {} seconds.", suspendTime / 1000);
+								log.info("Connection to Zookeeper is SUSPENDED. Wait it to be back. Already waited {} seconds.", duration / 1000);
 								Thread.sleep(1000L);
 								if (connState.get().isConnected()) {
 									log.info("Reconnected.");
