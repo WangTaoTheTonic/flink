@@ -134,6 +134,7 @@ under the License.
 									<shadedPattern>org.apache.flink.hadoop.shaded.com.google</shadedPattern>
 									<excludes>
 										<exclude>com.google.inject.**</exclude>
+										<exclude>com/google/common/base/Function</exclude>
 									</excludes>
 								</relocation>
 								<relocation>
