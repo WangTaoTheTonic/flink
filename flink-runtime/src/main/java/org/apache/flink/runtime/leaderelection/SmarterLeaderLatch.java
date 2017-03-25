@@ -19,33 +19,9 @@
 
 package org.apache.flink.runtime.leaderelection;
 
-import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Function;
-import com.google.common.base.Preconditions;
-import org.apache.curator.framework.CuratorFramework;
-import org.apache.curator.framework.api.BackgroundCallback;
-import org.apache.curator.framework.api.CuratorEvent;
-import org.apache.curator.framework.listen.ListenerContainer;
-import org.apache.curator.framework.recipes.AfterConnectionEstablished;
-import org.apache.curator.framework.recipes.leader.LeaderLatchListener;
-import org.apache.curator.framework.recipes.leader.LeaderSelector;
-import org.apache.curator.framework.recipes.leader.Participant;
-import org.apache.curator.framework.recipes.locks.LockInternals;
-import org.apache.curator.framework.recipes.locks.LockInternalsSorter;
-import org.apache.curator.framework.recipes.locks.StandardLockInternalsDriver;
-import org.apache.curator.framework.state.ConnectionState;
-import org.apache.curator.framework.state.ConnectionStateListener;
-import org.apache.curator.utils.ZKPaths;
-import org.apache.zookeeper.CreateMode;
-import org.apache.zookeeper.KeeperException;
-import org.apache.zookeeper.WatchedEvent;
-import org.apache.zookeeper.Watcher;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import java.io.Closeable;
 import java.io.EOFException;
 import java.io.IOException;
-import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executor;
@@ -53,7 +29,29 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
+
+import com.google.common.base.Function;
+import org.apache.curator.framework.CuratorFramework;
+import org.apache.curator.framework.api.BackgroundCallback;
+import org.apache.curator.framework.api.CuratorEvent;
+import org.apache.curator.framework.listen.ListenerContainer;
+import org.apache.curator.framework.recipes.AfterConnectionEstablished;
+import org.apache.curator.framework.recipes.leader.LeaderLatchListener;
+import org.apache.curator.framework.recipes.locks.LockInternals;
+import org.apache.curator.framework.recipes.locks.LockInternalsSorter;
+import org.apache.curator.framework.recipes.locks.StandardLockInternalsDriver;
+import org.apache.curator.framework.state.ConnectionState;
+import org.apache.curator.framework.state.ConnectionStateListener;
+import org.apache.curator.utils.ZKPaths;
 import org.apache.curator.utils.PathUtils;
+import org.apache.zookeeper.CreateMode;
+import org.apache.zookeeper.KeeperException;
+import org.apache.zookeeper.WatchedEvent;
+import org.apache.zookeeper.Watcher;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import org.apache.flink.util.Preconditions;
 
 /**
  * <p>
@@ -228,7 +226,6 @@ public class SmarterLeaderLatch implements Closeable
 		}
 	}
 
-	@VisibleForTesting
 	protected boolean cancelStartTask()
 	{
 		Future<?> localStartTask = startTask.getAndSet(null);
@@ -415,10 +412,8 @@ public class SmarterLeaderLatch implements Closeable
 		return (state.get() == State.STARTED) && hasLeadership.get();
 	}
 
-	@VisibleForTesting
 	volatile CountDownLatch debugResetWaitLatch = null;
 
-	@VisibleForTesting
 	void reset() throws Exception
 	{
 		setLeadership(false);
