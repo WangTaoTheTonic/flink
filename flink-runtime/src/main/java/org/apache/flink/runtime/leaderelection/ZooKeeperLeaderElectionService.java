@@ -52,7 +52,7 @@ public class ZooKeeperLeaderElectionService implements LeaderElectionService, Le
 	private final CuratorFramework client;
 
 	/** Curator recipe for leader election */
-	private final LeaderLatch leaderLatch;
+	private final SmarterLeaderLatch leaderLatch;
 
 	/** Curator recipe to watch a given ZooKeeper node for changes */
 	private final NodeCache cache;
@@ -87,7 +87,7 @@ public class ZooKeeperLeaderElectionService implements LeaderElectionService, Le
 		this.client = client;
 		this.leaderPath = leaderPath;
 
-		leaderLatch = new LeaderLatch(client, latchPath);
+		leaderLatch = new SmarterLeaderLatch(client, latchPath);
 		cache = new NodeCache(client, leaderPath);
 	}
 

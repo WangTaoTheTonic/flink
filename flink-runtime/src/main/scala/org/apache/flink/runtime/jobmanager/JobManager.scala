@@ -2668,25 +2668,6 @@ object JobManager {
       archiveClass: Class[_ <: MemoryArchivist])
     : (ActorRef, ActorRef) = {
 
-    val leaderServiceOption =
-      // In YARN mode, there's only one JobManager and we should make it always leader.
-      if (jobManagerClass.getName.equals("org.apache.flink.yarn.YarnJobManager")) {
-        HighAvailabilityMode.fromConfig(configuration) match {
-          case HighAvailabilityMode.ZOOKEEPER =>
-            val client = ZooKeeperUtils.startCuratorFramework(configuration)
-            val leaderPath = ConfigurationUtil.getStringWithDeprecatedKeys(
-              configuration,
-              ConfigConstants.HA_ZOOKEEPER_LEADER_PATH,
-              ConfigConstants.DEFAULT_ZOOKEEPER_LEADER_PATH,
-              ConfigConstants.ZOOKEEPER_LEADER_PATH)
-            Some(new ZookeeperAlwaysLeaderService(client, leaderPath))
-
-          case HighAvailabilityMode.NONE => None
-        }
-      } else {
-        None
-      }
-
     val (instanceManager,
     scheduler,
     libraryCacheManager,
@@ -2702,7 +2683,7 @@ object JobManager {
       configuration,
       futureExecutor,
       ioExecutor,
-      leaderServiceOption)
+      None)
 
     val archiveProps = getArchiveProps(archiveClass, archiveCount, archivePath)
 
